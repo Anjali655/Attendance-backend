@@ -1,7 +1,8 @@
-const { jwt } = require("jsonwebtoken");
-const { LoginSchema } = require("../database/login");
+const jwt = require("jsonwebtoken");
+const  LoginSchema  = require("../database/login");
 
 const saveUser = async (data) => {
+  // console.log(data);
   const result = await LoginSchema(data).save();
   const output = {
     data: result,
@@ -11,9 +12,10 @@ const saveUser = async (data) => {
 };
 
 const loginUser = async (data) => {
-  const result = await LoginSchema(data).findOne({
+  const result = await LoginSchema.findOne({
     username: data.username,
   });
+  // console.log(result,"result");
   if (result === null) {
     // console.log("user doesn't exists");
     const output = {
@@ -22,7 +24,10 @@ const loginUser = async (data) => {
       status: 400,
     };
     return output;
-  } else if (username === data.username && password != data.password) {
+  } else if (
+    result.username === data.username &&
+    result.password !== data.password
+  ) {
     // console.log("invalid credentials");
     const output = {
       data: {},
@@ -31,13 +36,17 @@ const loginUser = async (data) => {
     };
     return output;
   } else {
-    const token = (result) => {
-      return jwt.sign({ result }, "CodeDrill secret", {
-        expiresIn: 3 * 24 * 60 * 60,
-      });
-    };
+    // console.log("here");
+    // const token = (result) => {
+    const token = jwt.sign({id: result._id }, "CodeDrill secret", {
+      expiresIn: 3 * 24 * 60 * 60,
+    });
+    console.log(token);
+    // };
     const output = {
-      data: token,
+      data: {
+        token: token
+      },
       message: "logged in successfully....",
       status: 200,
     };
