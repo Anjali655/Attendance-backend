@@ -31,13 +31,13 @@ const loginUser = async (data) => {
     };
     return output;
   } else {
-    const logintoken = (result) => {
+    const token = (result) => {
       return jwt.sign({ result }, "CodeDrill secret", {
         expiresIn: 3 * 24 * 60 * 60,
       });
     };
     const output = {
-      data: logintoken,
+      data: token,
       message: "logged in successfully....",
       status: 200,
     };
