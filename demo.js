@@ -1,12 +1,19 @@
 const { ApolloServer, gql } = require("apollo-server");
 const mongoose = require("mongoose");
-const { typeDefs } = require("./typedefs/login");
-const { resolvers } = require("./resolvers/login");
+const { typeDefs } = require("./typedefs");
+const { resolvers } = require("./resolvers");
+const refactorToken = require("./middleware");
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  csrfPrevention: true,
+  context: ({ req }) => {
+    const token = req.headers.authorization;
+    const user = {
+      token,
+    };
+    return user;
+  },
 });
 
 server.listen().then(({ url }) => {
