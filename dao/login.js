@@ -40,7 +40,7 @@ const loginUser = async (data) => {
     };
     return output;
   } else {
-    console.log({ id: result._id }, "login token");
+    // console.log({ id: result._id }, "login token");
     const token = jwt.sign({ id: result._id }, "CodeDrill secret", {
       expiresIn: 3 * 24 * 60 * 60,
     });

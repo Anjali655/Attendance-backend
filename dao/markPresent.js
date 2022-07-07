@@ -7,6 +7,7 @@ const AdminSchema = require("../database/admin");
 
 const markAttendance = async (context) => {
   const verify = await refactorToken(context);
+  console.log(verify, "verify token");
   if (verify.isAuth === true) {
     const userid = verify.userid;
 
@@ -20,7 +21,7 @@ const markAttendance = async (context) => {
       return {
         data: "Already taken the attendance",
         message: "Already taken attendance",
-        status: 200,
+        status: 201,
       };
     } else {
       const saveData = {
@@ -59,7 +60,7 @@ const getTodayAttendance = async (context) => {
 
   const adminCheck = await AdminSchema.findById(verify.userid);
 
-  console.log(adminCheck, "adminCheck");
+  /*console.log(adminCheck, "adminCheck"); */
   if (adminCheck && verify.isAuth) {
     const today = moment().format("DD-MM-YYYY");
     const checkIfAlready = await AttendanceSchema.find({
