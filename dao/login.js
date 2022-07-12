@@ -4,31 +4,46 @@ const AdminSchema = require("../database/admin");
 
 const saveUser = async (data) => {
   // console.log(data);
-  const result = await LoginSchema(data).save();
-  const output = {
-    data: result,
-    message: "Employee created",
-  };
-  return output;
+  const checkIfAlreadyExists = await LoginSchema.find({
+    username: data.username,
+  });
+  console.log(checkIfAlreadyExists);
+
+  if (checkIfAlreadyExists.length > 0) {
+    const output = {
+      data: "User already exists",
+      message: "User already exists",
+      status: 201,
+    };
+    return output;
+  } else {
+    const result = await LoginSchema(data).save();
+    const createUser = {
+      data: result,
+      message: "Employee created",
+      status: 200,
+    };
+    return createUser;
+  }
 };
 
 const loginUser = async (data) => {
   const result = await LoginSchema.findOne({ username: data.username });
   console.log(result, "result");
-  if (result === null) {
+  if (result === null || result.length === 0) {
     const output = {
-      data: {},
+      data: null,
       message: "user doesn't exists",
       status: 400,
     };
     return output;
-  } else if (result.length === 0) {
-    const output = {
-      data: {},
-      message: "user doesn't exists",
-      status: 400,
-    };
-    return output;
+    // } else if (result.length === 0) {
+    //   const output = {
+    //     data: {},
+    //     message: "user doesn't exists",
+    //     status: 400,
+    //   };
+    //   return output;
   } else if (
     result.username === data.username &&
     result.password !== data.password
