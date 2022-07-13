@@ -12,7 +12,7 @@ const saveUser = async (data) => {
   if (checkIfAlreadyExists.length > 0) {
     const output = {
       data: "User already exists",
-      message: "User already exists",
+      message: "User with this username already exists",
       status: 201,
     };
     return output;
@@ -20,7 +20,7 @@ const saveUser = async (data) => {
     const result = await LoginSchema(data).save();
     const createUser = {
       data: result,
-      message: "Employee created",
+      message: "Employee created successfully...",
       status: 200,
     };
     return createUser;
