@@ -83,7 +83,33 @@ const typeDefs = gql(`
     }
 
     #========  ATTENDANCE SHEET ENDS===============
-    #==========================================
+    #==============================================
+
+    #========  EMP LIST =======================
+    #==============================================
+
+    type empList {
+        employeename: String
+        department: String
+        email: String
+        mobileno: Int
+    }
+
+    input empListInput {
+        employeename: String
+        department: String
+        email: String
+        mobileno: Int
+    }
+
+    type empListOutput {
+        data: String
+        message: String
+        status: Int
+    }
+
+    #========  EMP LIST ENDS =======================
+    #==============================================
 
 
     type Query {
@@ -96,6 +122,7 @@ const typeDefs = gql(`
         empSignup( input: signupInput): signupOutput
         adminSignup( input: signupInput): signupOutput
         markAttendance: markAttendance
+        
     }
 `);
 
