@@ -85,30 +85,22 @@ const typeDefs = gql(`
     #========  ATTENDANCE SHEET ENDS===============
     #==============================================
 
-    #========  EMP LIST =======================
+    #========  EMPLIST SHEET =======================
     #==============================================
 
-    type empList {
-        employeename: String
-        department: String
-        email: String
-        mobileno: Int
-    }
-
-    input empListInput {
-        employeename: String
-        department: String
-        email: String
-        mobileno: Int
+    type empListsheet {
+        fullname: String
+        username: String
+        password: String
     }
 
     type empListOutput {
-        data: String
+        data: [empListsheet]
         message: String
         status: Int
     }
 
-    #========  EMP LIST ENDS =======================
+    #========  EMPLIST ENDS =======================
     #==============================================
 
 
@@ -116,6 +108,7 @@ const typeDefs = gql(`
         empLogin( input: loginInput ): loginOutput 
         adminLogin( input: loginInput ): loginOutput  
         getTodaysAttendance: attendanceOutput   
+        getEmpList: empListOutput
     }
      
     type Mutation {
