@@ -56,6 +56,7 @@ const markAttendance = async (context) => {
 };
 
 const getTodayAttendance = async (context) => {
+  console.log(context,"???????????????????");
   const verify = await refactorToken(context);
 
   const adminCheck = await AdminSchema.findById(verify.userid);
@@ -77,10 +78,10 @@ const getTodayAttendance = async (context) => {
               attendance: value.attendance,
               date: value.today,
             };
-          }
+          },
         );
         return userData;
-      })
+      }),
     );
 
     return {
@@ -97,4 +98,24 @@ const getTodayAttendance = async (context) => {
   }
 };
 
-module.exports = { markAttendance, getTodayAttendance };
+const getTotalEmployee = async (context) => {
+  const verify = await refactorToken(context);
+  const adminCheck = await AdminSchema.findById(verify.userid);
+  if (adminCheck && verify.isAuth) {
+    const employeedata = await LoginSchema.find();
+    console.log(employeedata);
+    return {
+      data: employeedata,
+      message: "attendance sheet",
+      status: 200,
+    };
+  } else {
+    return {
+      data: null,
+      message: "unauthorized user",
+      status: 400,
+    };
+  }
+};
+
+module.exports = { markAttendance, getTodayAttendance, getTotalEmployee };

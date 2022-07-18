@@ -1,5 +1,9 @@
 const { saveUser, loginUser, loginAdmin, saveAdmin } = require("../dao/login");
-const { markAttendance, getTodayAttendance } = require("../dao/markPresent");
+const {
+  markAttendance,
+  getTodayAttendance,
+  getTotalEmployee,
+} = require("../dao/markPresent");
 
 const resolvers = {
   Query: {
@@ -11,6 +15,9 @@ const resolvers = {
     },
     getTodaysAttendance: async (parent, info, context) => {
       return getTodayAttendance(context);
+    },
+    getEmpList: async (parent, info, context) => {
+      return getTotalEmployee(context);
     },
   },
   Mutation: {

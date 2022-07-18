@@ -10,12 +10,16 @@ const typeDefs = gql(`
         fullname: String
         username: String
         password: String
+        department: String,
+        mobile: String
     }
 
     input signupInput {
         fullname: String!
         username: String!
         password: String!
+        department:String,
+        mobile: String
     }
 
     type signupOutput {
@@ -92,6 +96,8 @@ const typeDefs = gql(`
         fullname: String
         username: String
         password: String
+        department: String,
+        mobile: String
     }
 
     type empListOutput {

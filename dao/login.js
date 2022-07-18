@@ -7,7 +7,7 @@ const saveUser = async (data) => {
   const checkIfAlreadyExists = await LoginSchema.find({
     username: data.username,
   });
-  console.log(checkIfAlreadyExists);
+  // console.log(checkIfAlreadyExists);
 
   if (checkIfAlreadyExists.length > 0) {
     const output = {
@@ -59,7 +59,7 @@ const loginUser = async (data) => {
     const token = jwt.sign({ id: result._id }, "CodeDrill secret", {
       expiresIn: 3 * 24 * 60 * 60,
     });
-    console.log(token);
+    // console.log(token);
     const output = {
       data: {
         token: token,
@@ -84,20 +84,20 @@ const saveAdmin = async (data) => {
 const loginAdmin = async (data) => {
   const result = await AdminSchema.findOne({ username: data.username });
 
-  if (result === null) {
+  if (result === null || result.length === 0) {
     const output = {
-      data: {},
-      message: "user doesn't exists",
+      data: null,
+      message: "Admin doesn't exists",
       status: 400,
     };
     return output;
-  } else if (result.length === 0) {
-    const output = {
-      data: {},
-      message: "user doesn't exists",
-      status: 400,
-    };
-    return output;
+    // } else if (result.length === 0) {
+    //   const output = {
+    //     data: {},
+    //     message: "user doesn't exists",
+    //     status: 400,
+    //   };
+    //   return output;
   } else if (
     result.username === data.username &&
     result.password !== data.password
@@ -109,11 +109,11 @@ const loginAdmin = async (data) => {
     };
     return output;
   } else {
-    console.log({ id: result._id }, "login token");
+    // console.log({ id: result._id }, "login token");
     const token = jwt.sign({ id: result._id }, "CodeDrill secret", {
       expiresIn: 3 * 24 * 60 * 60,
     });
-    console.log(token);
+    // console.log(token);
     const output = {
       data: {
         token: token,
