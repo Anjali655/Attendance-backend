@@ -77,7 +77,8 @@ const typeDefs = gql(`
     type attendanceSheet{
         employeeName: String
         attendance: String
-        date: String
+        signIn: String
+        signOut: String
     }
 
     type attendanceOutput{

@@ -56,7 +56,7 @@ const markAttendance = async (context) => {
 };
 
 const getTodayAttendance = async (context) => {
-  console.log(context,"???????????????????");
+  console.log(context, "???????????????????");
   const verify = await refactorToken(context);
 
   const adminCheck = await AdminSchema.findById(verify.userid);
@@ -70,18 +70,23 @@ const getTodayAttendance = async (context) => {
 
     const sheet = await Promise.all(
       checkIfAlready.map(async (value, index) => {
-        const userData = await LoginSchema.findById(value.userid).then(
-          (data) => {
-            console.log(data);
-            return {
-              employeeName: data.fullname,
-              attendance: value.attendance,
-              date: value.today,
-            };
-          },
-        );
+        // console.log(value);
+        const userData = await LoginSchema.find().then((data) => {
+          console.log(data);
+          return Promise.all(
+            data.map((emp) => {
+              return {
+                employeeName: emp.fullname,
+                attendance: emp.attendance,
+                signIn: emp.today,
+                signOut: emp.today,
+              };
+            })
+          );
+        });
+        console.log(userData, ">>>>>>>>>>>>>>>>>>>>>>>>s");
         return userData;
-      }),
+      })
     );
 
     return {
