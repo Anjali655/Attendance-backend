@@ -3,6 +3,9 @@ const {
   markAttendance,
   getTodayAttendance,
   getTotalEmployee,
+  signOut,
+  getCheckList,
+  getAnyAttendance,
 } = require("../dao/markPresent");
 
 const resolvers = {
@@ -16,8 +19,14 @@ const resolvers = {
     getTodaysAttendance: async (parent, info, context) => {
       return getTodayAttendance(context);
     },
+    getAnyAttendance: async (parent, info, context) => {
+      return getAnyAttendance(info.input.date, context);
+    },
     getEmpList: async (parent, info, context) => {
       return getTotalEmployee(context);
+    },
+    checkLogin: async (parent, info, context) => {
+      return getCheckList(context);
     },
   },
   Mutation: {
@@ -29,6 +38,9 @@ const resolvers = {
     },
     markAttendance: async (parent, info, context) => {
       return markAttendance(context);
+    },
+    signout: async (parent, info, context) => {
+      return signOut(context);
     },
   },
 };

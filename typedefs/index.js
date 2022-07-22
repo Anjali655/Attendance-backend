@@ -3,6 +3,8 @@ const { gql } = require("apollo-server");
 
 const typeDefs = gql(`
 
+scalar Date
+
     #==========================================
     #======== SIGNUP  ===============
 
@@ -66,6 +68,10 @@ const typeDefs = gql(`
     input markInput{
         empId: String
     }
+    
+    input dataInput{
+        date: String
+    }
 
     #==========================================
     #========  MARK ATTENDANCE ENDS================
@@ -77,8 +83,8 @@ const typeDefs = gql(`
     type attendanceSheet{
         employeeName: String
         attendance: String
-        signIn: String
-        signOut: String
+        signIn: Date
+        signOut: Date
     }
 
     type attendanceOutput{
@@ -116,12 +122,15 @@ const typeDefs = gql(`
         adminLogin( input: loginInput ): loginOutput  
         getTodaysAttendance: attendanceOutput   
         getEmpList: empListOutput
+        checkLogin: markAttendance
+        getAnyAttendance(input: dataInput):attendanceOutput
     }
      
     type Mutation {
         empSignup( input: signupInput): signupOutput
         adminSignup( input: signupInput): signupOutput
         markAttendance: markAttendance
+        signout: markAttendance
         
     }
 `);

@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 
 const dataSchema = new mongoose.Schema({
   userid: { type: String },
-  today: { type: String },
-  dateTime: { type: Date },
+  signin: { type: Date },
+  signout: { type: Date },
   attendance: { type: String },
 });
 

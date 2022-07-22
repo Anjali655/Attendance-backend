@@ -17,7 +17,7 @@ const server = new ApolloServer({
 });
 
 server.listen().then(({ url }) => {
-  dbUrl = "mongodb://localhost:27017/attendancedb";
+  dbUrl = "mongodb://127.0.0.1:27017/attendancedb";
   mongoose
     .connect(dbUrl)
     .then(() => {

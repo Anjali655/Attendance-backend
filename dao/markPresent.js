@@ -10,11 +10,12 @@ const markAttendance = async (context) => {
   console.log(verify, "verify token");
   if (verify.isAuth === true) {
     const userid = verify.userid;
-
-    const today = moment().format("DD-MM-YYYY");
+    const today = moment().format("YYYY-MM-DD");
+    let date = today + "T00:00:00.000+00:00";
+    let date1 = today + "T23:59:59.999+00:00";
     const checkIfAlready = await AttendanceSchema.find({
       userid: userid,
-      today: today.toString(),
+      signin: { $gte: date, $lt: date1 },
     });
 
     if (checkIfAlready.length > 0) {
@@ -26,8 +27,7 @@ const markAttendance = async (context) => {
     } else {
       const saveData = {
         userid: userid.toString(),
-        today: today.toString(),
-        dateTime: new Date(),
+        signin: new Date(),
         attendance: "present",
       };
 
@@ -55,36 +55,141 @@ const markAttendance = async (context) => {
   }
 };
 
+const signOut = async (context) => {
+  const verify = await refactorToken(context);
+  console.log(verify, "verify token");
+  if (verify.isAuth === true) {
+    const userid = verify.userid;
+
+    const today = moment().format("YYYY-MM-DD");
+    let date = today + "T00:00:00.000+00:00";
+    let date1 = today + "T23:59:59.999+00:00";
+    const getTodaysAttendance = await AttendanceSchema.findOne({
+      userid: userid,
+      signin: { $gte: date, $lt: date1 },
+    });
+
+    if (getTodaysAttendance?.signout) {
+      return {
+        data: "Already Signed Out",
+        message: "Already Signed Out",
+        status: 201,
+      };
+    } else {
+      const saveInside = getTodaysAttendance
+        ? await AttendanceSchema.findOneAndUpdate(
+            { _id: getTodaysAttendance?._id },
+            { signout: new Date() }
+          )
+        : null;
+
+      if (saveInside) {
+        return {
+          data: "Signed Out",
+          message: "Signed Out",
+          status: 200,
+        };
+      }
+    }
+  } else {
+    return {
+      data: null,
+      message: "unauthorised user",
+      status: 400,
+    };
+  }
+};
+
 const getTodayAttendance = async (context) => {
-  console.log(context, "???????????????????");
   const verify = await refactorToken(context);
 
   const adminCheck = await AdminSchema.findById(verify.userid);
 
-  /*console.log(adminCheck, "adminCheck"); */
   if (adminCheck && verify.isAuth) {
-    const today = moment().format("DD-MM-YYYY");
-    const checkIfAlready = await AttendanceSchema.find({
-      today: today.toString(),
+    const today = moment().format("YYYY-MM-DD");
+    let date = today + "T00:00:00.000+00:00";
+    let date1 = today + "T23:59:59.999+00:00";
+
+    const attendance = await AttendanceSchema.find({
+      signin: {
+        $gte: new Date(date),
+        $lt: new Date(date1),
+      },
     });
 
     const sheet = await Promise.all(
-      checkIfAlready.map(async (value, index) => {
-        // console.log(value);
-        const userData = await LoginSchema.find().then((data) => {
-          console.log(data);
-          return Promise.all(
-            data.map((emp) => {
-              return {
-                employeeName: emp.fullname,
-                attendance: emp.attendance,
-                signIn: emp.today,
-                signOut: emp.today,
-              };
-            })
-          );
-        });
-        console.log(userData, ">>>>>>>>>>>>>>>>>>>>>>>>s");
+      attendance.map(async (value, index) => {
+        const userData = await LoginSchema.findById(value.userid).then(
+          (data) => {
+            return {
+              employeeName: data.fullname,
+              attendance: value.attendance,
+              signIn: moment
+                .utc(value.signin)
+                .local()
+                .format("YYYY-MMM-DD h:mm A"),
+              signOut: moment
+                .utc(value.signout)
+                .local()
+                .format("YYYY-MMM-DD h:mm A"),
+            };
+          }
+        );
+
+        return userData;
+      })
+    );
+
+    return {
+      data: sheet,
+      message: "attendance sheet",
+      status: 200,
+    };
+  } else {
+    return {
+      data: null,
+      message: "unauthorized user",
+      status: 400,
+    };
+  }
+};
+
+const getAnyAttendance = async (input, context) => {
+  console.log(input, "input >>>>>>>>>>>>>>>>>");
+  const verify = await refactorToken(context);
+
+  const adminCheck = await AdminSchema.findById(verify.userid);
+
+  if (adminCheck && verify.isAuth) {
+    const today = moment(input).format("YYYY-MM-DD");
+    let date = today + "T00:00:00.000+00:00";
+    let date1 = today + "T23:59:59.999+00:00";
+
+    const attendance = await AttendanceSchema.find({
+      signin: {
+        $gte: new Date(date),
+        $lt: new Date(date1),
+      },
+    });
+
+    const sheet = await Promise.all(
+      attendance.map(async (value, index) => {
+        const userData = await LoginSchema.findById(value.userid).then(
+          (data) => {
+            return {
+              employeeName: data.fullname,
+              attendance: value.attendance,
+              signIn: moment
+                .utc(value.signin)
+                .local()
+                .format("YYYY-MMM-DD h:mm A"),
+              signOut: value.signout
+                ? moment.utc(value.signout).local().format("YYYY-MMM-DD h:mm A")
+                : "",
+            };
+          }
+        );
+
         return userData;
       })
     );
@@ -123,4 +228,45 @@ const getTotalEmployee = async (context) => {
   }
 };
 
-module.exports = { markAttendance, getTodayAttendance, getTotalEmployee };
+const getCheckList = async (context) => {
+  const verify = await refactorToken(context);
+  if (verify.isAuth === true) {
+    const userid = verify.userid;
+    const today = moment().format("YYYY-MM-DD");
+    let date = today + "T00:00:00.000+00:00";
+    let date1 = today + "T23:59:59.999+00:00";
+    const checkIfAlready = await AttendanceSchema.find({
+      userid: userid,
+      signin: { $gte: date, $lt: date1 },
+    });
+    console.log(checkIfAlready);
+    if (checkIfAlready.length > 0) {
+      return {
+        data: "signed in already",
+        message: "signed in already",
+        status: 200,
+      };
+    } else {
+      return {
+        data: "not signed in already",
+        message: "not signed in already",
+        status: 201,
+      };
+    }
+  } else {
+    return {
+      data: "unauthorized user",
+      message: "unauthorized user",
+      status: 400,
+    };
+  }
+};
+
+module.exports = {
+  markAttendance,
+  signOut,
+  getTodayAttendance,
+  getTotalEmployee,
+  getCheckList,
+  getAnyAttendance,
+};
