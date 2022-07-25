@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const refactorToken = (token) => {
   if (token !== undefined) {
+    // console.log(token, "token?>>>>>>");
     try {
       const decoded = jwt.verify(token.token, "CodeDrill secret");
       return { isAuth: true, userid: decoded.id };

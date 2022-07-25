@@ -11,8 +11,14 @@ const markAttendance = async (context) => {
   if (verify.isAuth === true) {
     const userid = verify.userid;
     const today = moment().format("YYYY-MM-DD");
-    let date = today + "T00:00:00.000+00:00";
-    let date1 = today + "T23:59:59.999+00:00";
+    let date = moment
+      .parseZone(today + "T00:00:00.000+05:30")
+      .utc()
+      .format();
+    let date1 = moment
+      .parseZone(today + "T23:59:59.999+05:30")
+      .utc()
+      .format();
     const checkIfAlready = await AttendanceSchema.find({
       userid: userid,
       signin: { $gte: date, $lt: date1 },
@@ -102,14 +108,23 @@ const signOut = async (context) => {
 
 const getTodayAttendance = async (context) => {
   const verify = await refactorToken(context);
+  console.log(verify, "verify????????");
 
   const adminCheck = await AdminSchema.findById(verify.userid);
 
   if (adminCheck && verify.isAuth) {
     const today = moment().format("YYYY-MM-DD");
-    let date = today + "T00:00:00.000+00:00";
-    let date1 = today + "T23:59:59.999+00:00";
+    let date = moment
+      .parseZone(today + "T00:00:00.000+05:30")
+      .utc()
+      .format();
+    let date1 = moment
+      .parseZone(today + "T23:59:59.999+05:30")
+      .utc()
+      .format();
 
+    // console.log(date, "Date>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    // console.log(date1, "Date1>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     const attendance = await AttendanceSchema.find({
       signin: {
         $gte: new Date(date),
@@ -128,10 +143,9 @@ const getTodayAttendance = async (context) => {
                 .utc(value.signin)
                 .local()
                 .format("YYYY-MMM-DD h:mm A"),
-              signOut: moment
-                .utc(value.signout)
-                .local()
-                .format("YYYY-MMM-DD h:mm A"),
+              signOut: value.signout
+                ? moment.utc(value.signout).local().format("YYYY-MMM-DD h:mm A")
+                : "",
             };
           }
         );
@@ -162,8 +176,16 @@ const getAnyAttendance = async (input, context) => {
 
   if (adminCheck && verify.isAuth) {
     const today = moment(input).format("YYYY-MM-DD");
-    let date = today + "T00:00:00.000+00:00";
-    let date1 = today + "T23:59:59.999+00:00";
+    let date = moment
+      .parseZone(today + "T00:00:00.000+05:30")
+      .utc()
+      .format();
+    let date1 = moment
+      .parseZone(today + "T23:59:59.999+05:30")
+      .utc()
+      .format();
+
+    console.log(date, "date>>>>>>", date1, "date1???????");
 
     const attendance = await AttendanceSchema.find({
       signin: {
@@ -233,8 +255,14 @@ const getCheckList = async (context) => {
   if (verify.isAuth === true) {
     const userid = verify.userid;
     const today = moment().format("YYYY-MM-DD");
-    let date = today + "T00:00:00.000+00:00";
-    let date1 = today + "T23:59:59.999+00:00";
+    let date = moment
+      .parseZone(today + "T00:00:00.000+05:30")
+      .utc()
+      .format();
+    let date1 = moment
+      .parseZone(today + "T23:59:59.999+05:30")
+      .utc()
+      .format();
     const checkIfAlready = await AttendanceSchema.find({
       userid: userid,
       signin: { $gte: date, $lt: date1 },
